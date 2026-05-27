@@ -3,98 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pressure Ulcer Risk Calculator</title>
+
+<title>Pressure Ulcer Risk Prediction System</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-    body{
-        font-family: Arial, sans-serif;
-        background:#eef5ff;
-        margin:0;
-        padding:20px;
-    }
 
-    .container{
-        max-width:900px;
-        margin:auto;
-        background:white;
-        padding:25px;
-        border-radius:20px;
-        box-shadow:0 0 15px rgba(0,0,0,0.1);
-    }
+body{
+    font-family: Arial, sans-serif;
+    background:#eef5ff;
+    margin:0;
+    padding:20px;
+}
 
-    h1{
-        text-align:center;
-        color:#1e4fa3;
-    }
+.container{
+    max-width:1000px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
 
-    .box{
-        margin-top:20px;
-        padding:15px;
-        background:#f4f8ff;
-        border-radius:15px;
-    }
+h1{
+    text-align:center;
+    color:#1e4fa3;
+}
 
-    label{
-        font-weight:bold;
-    }
+.description{
+    background:#f4f8ff;
+    padding:15px;
+    border-radius:15px;
+    margin-bottom:20px;
+    line-height:1.8;
+}
 
-    input, button, textarea{
-        width:100%;
-        padding:10px;
-        margin-top:8px;
-        margin-bottom:15px;
-        border-radius:10px;
-        border:1px solid #ccc;
-        font-size:16px;
-    }
+.box{
+    background:#f7f9fc;
+    padding:20px;
+    border-radius:15px;
+    margin-top:20px;
+}
 
-    button{
-        background:#1e4fa3;
-        color:white;
-        cursor:pointer;
-        border:none;
-    }
+input, button, textarea{
+    width:100%;
+    padding:10px;
+    margin-top:8px;
+    margin-bottom:15px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
 
-    button:hover{
-        background:#163b7a;
-    }
+button{
+    background:#1e4fa3;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
 
-    .result{
-        font-size:20px;
-        font-weight:bold;
-        color:#d62828;
-    }
+button:hover{
+    background:#163b7a;
+}
 
-    .safe{
-        color:green;
-    }
+.result{
+    font-size:22px;
+    font-weight:bold;
+}
 
-    .warning{
-        color:orange;
-    }
+.safe{
+    color:green;
+}
 
-    .danger{
-        color:red;
-    }
+.warning{
+    color:orange;
+}
 
-    table{
-        width:100%;
-        border-collapse:collapse;
-        margin-top:15px;
-    }
+.danger{
+    color:red;
+}
 
-    table, th, td{
-        border:1px solid #ccc;
-    }
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
 
-    th, td{
-        padding:10px;
-        text-align:center;
-    }
+table, th, td{
+    border:1px solid #ccc;
+}
 
-    .feedback-box{
-        margin-top:20px;
-    }
+th, td{
+    padding:10px;
+    text-align:center;
+}
+
+canvas{
+    margin-top:20px;
+}
+
+.bed-container{
+    margin-top:20px;
+    text-align:center;
+}
+
+.bed{
+    width:260px;
+    height:20px;
+    background:#4a90e2;
+    margin:auto;
+    position:relative;
+    transform-origin:left center;
+    transition:1s;
+}
+
+.patient{
+    width:120px;
+    height:20px;
+    background:#ff8c42;
+    position:absolute;
+    top:-20px;
+    left:60px;
+    border-radius:10px;
+}
+
+.angle-text{
+    margin-top:10px;
+    font-weight:bold;
+}
 
 </style>
 </head>
@@ -103,27 +140,47 @@
 
 <div class="container">
 
-<h1>Pressure Ulcer Risk Calculator<br>
-(ระบบประเมินความเสี่ยงแผลกดทับ)</h1>
+<h1>
+Pressure Ulcer Risk Prediction System<br>
+(ระบบประเมินความเสี่ยงแผลกดทับ)
+</h1>
 
-<div class="box">
+<div class="description">
 
-<label>ชื่อผู้ใช้งาน</label>
-<input type="text" id="username" placeholder="กรอกชื่อ">
+<b>System Description (คำอธิบายระบบ)</b><br><br>
 
-<label>น้ำหนักตัว (กิโลกรัม)</label>
-<input type="number" id="weight" placeholder="เช่น 50">
+ระบบนี้ช่วยประเมินความเสี่ยงการเกิดแผลกดทับจากมุมการนอนและน้ำหนักตัวของผู้ป่วยติดเตียง 
+โดยใช้แบบจำลองทางคณิตศาสตร์ในการคำนวณแรงกดและแรงเฉือน 
+พร้อมแนะนำการปรับมุมเตียงเพื่อลดความเสี่ยงในการเกิดแผลกดทับ 
+รวมถึงแสดงกราฟแนวโน้มการใช้งานและเก็บข้อมูลย้อนหลังของผู้ใช้งานแต่ละคน
 
-<label>มุมเตียงที่ใช้นอน (องศา)</label>
-<input type="number" id="angle" placeholder="0 - 90">
+<br><br>
 
-<button onclick="calculateRisk()">คำนวณความเสี่ยง</button>
+This system evaluates pressure ulcer risk based on bed angle and patient body weight using mathematical modeling. 
+The system calculates pressure and shear forces, provides posture adjustment recommendations, and displays usage trends and patient history.
 
 </div>
 
 <div class="box">
 
-<h2>ผลการประเมิน</h2>
+<h2>Patient Information (ข้อมูลผู้ป่วย)</h2>
+
+<label>ชื่อผู้ใช้งาน</label>
+<input type="text" id="username">
+
+<label>น้ำหนักตัว (กิโลกรัม)</label>
+<input type="number" id="weight">
+
+<label>มุมเตียงที่ใช้นอน (องศา)</label>
+<input type="number" id="angle" min="0" max="90">
+
+<button onclick="calculateRisk()">Calculate Risk</button>
+
+</div>
+
+<div class="box">
+
+<h2>Risk Assessment Result (ผลการประเมิน)</h2>
 
 <p id="riskResult" class="result"></p>
 
@@ -131,22 +188,41 @@
 
 <p id="problem"></p>
 
-<p id="model"></p>
+</div>
+
+<div class="box">
+
+<h2>Bed Position Model (แบบจำลองท่านอน)</h2>
+
+<div class="bed-container">
+
+<div class="bed" id="bed">
+
+<div class="patient"></div>
+
+</div>
+
+<p class="angle-text" id="angleText"></p>
+
+</div>
 
 </div>
 
 <div class="box">
 
-<h2>ประวัติการใช้งาน</h2>
+<h2>Patient History (ประวัติผู้ใช้งาน)</h2>
 
 <table>
+
 <thead>
+
 <tr>
 <th>ชื่อ</th>
 <th>น้ำหนัก</th>
 <th>มุม</th>
-<th>ค่าความเสี่ยง</th>
+<th>Risk</th>
 </tr>
+
 </thead>
 
 <tbody id="historyTable"></tbody>
@@ -155,13 +231,21 @@
 
 </div>
 
-<div class="box feedback-box">
+<div class="box">
+
+<h2>Risk Trend Graph (กราฟแนวโน้มความเสี่ยง)</h2>
+
+<canvas id="riskChart"></canvas>
+
+</div>
+
+<div class="box">
 
 <h2>Feedback (ความคิดเห็นหลังใช้งาน)</h2>
 
-<textarea id="feedbackText" rows="4" placeholder="แสดงความคิดเห็น..."></textarea>
+<textarea id="feedbackText" rows="4"></textarea>
 
-<button onclick="saveFeedback()">ส่งความคิดเห็น</button>
+<button onclick="saveFeedback()">Send Feedback</button>
 
 <ul id="feedbackList"></ul>
 
@@ -171,6 +255,8 @@
 
 <script>
 
+let chart;
+
 function calculateRisk(){
 
     let username = document.getElementById("username").value;
@@ -178,24 +264,21 @@ function calculateRisk(){
     let angle = parseFloat(document.getElementById("angle").value);
 
     if(isNaN(weight) || isNaN(angle)){
+
         alert("กรุณากรอกข้อมูลให้ครบ");
         return;
     }
 
-    // แปลงองศาเป็นเรเดียน
     let rad = angle * Math.PI / 180;
 
-    // แรงกด
     let Fn = weight * 9.81 * Math.cos(rad);
 
-    // แรงเฉือน
     let Fs = weight * 9.81 * Math.sin(rad);
 
-    // Normalize
     let FnPrime = Fn / (weight * 9.81);
+
     let FsPrime = Fs / (weight * 9.81);
 
-    // Risk Equation
     let risk = 0.5 * (FnPrime + FsPrime);
 
     risk = risk.toFixed(3);
@@ -203,49 +286,57 @@ function calculateRisk(){
     let level = "";
     let advice = "";
     let problem = "";
-    let model = "";
 
     if(risk < 0.60){
 
-        level = "ความเสี่ยงต่ำ";
-        advice = "แนะนำให้นอนในช่วงมุม 0° - 15° และเปลี่ยนท่านอนทุก 2 ชั่วโมง";
-        problem = "หากนอนท่าเดิมนานเกินไป อาจเริ่มเกิดการกดทับบริเวณผิวหนัง";
-        model = "แบบจำลองท่า : นอนราบหรือนอนเอียงเล็กน้อย";
+        level = "Low Risk (ความเสี่ยงต่ำ)";
+        advice = "Recommended angle: 0°–30°. Change posture every 2 hours.";
+        problem = "Low pressure accumulation.";
 
-        document.getElementById("riskResult").className = "result safe";
+        document.getElementById("riskResult").className =
+        "result safe";
 
-    }else if(risk < 0.70){
+    }
 
-        level = "ความเสี่ยงปานกลาง";
-        advice = "ควรลดมุมเตียงลง และใช้หมอนรองเพื่อลดแรงกด";
-        problem = "อาจเกิดผิวหนังแดง ระคายเคือง หรือเริ่มมีแผลกดทับระยะต้น";
-        model = "แบบจำลองท่า : นอนยกหัวเตียงประมาณ 30°";
+    else if(risk < 0.70){
 
-        document.getElementById("riskResult").className = "result warning";
+        level = "Moderate Risk (ความเสี่ยงปานกลาง)";
+        advice = "Reduce bed angle and use pillows for support.";
+        problem = "Moderate pressure and shear force may reduce blood circulation.";
 
-    }else{
+        document.getElementById("riskResult").className =
+        "result warning";
 
-        level = "ความเสี่ยงสูง";
-        advice = "ควรลดมุมเตียงลงต่ำกว่า 45° และพลิกตัวบ่อยขึ้น";
-        problem = "เสี่ยงเกิดแผลกดทับรุนแรง การไหลเวียนเลือดลดลง และเกิดการบาดเจ็บของเนื้อเยื่อ";
-        model = "แบบจำลองท่า : นอนยกหัวเตียงสูงมาก";
+    }
 
-        document.getElementById("riskResult").className = "result danger";
+    else{
+
+        level = "High Risk (ความเสี่ยงสูง)";
+        advice = "Reduce angle below 45° and reposition immediately.";
+        problem = "High pressure and shear force may cause tissue damage and pressure ulcers.";
+
+        document.getElementById("riskResult").className =
+        "result danger";
+
     }
 
     document.getElementById("riskResult").innerHTML =
-        "ค่าความเสี่ยง = " + risk + " (" + level + ")";
+    "Risk Score = " + risk + " (" + level + ")";
 
     document.getElementById("advice").innerHTML =
-        "<b>คำแนะนำ :</b> " + advice;
+    "<b>Recommendation:</b> " + advice;
 
     document.getElementById("problem").innerHTML =
-        "<b>ผลกระทบหากยังนอนมุมเดิม :</b> " + problem;
+    "<b>Possible Effects:</b> " + problem;
 
-    document.getElementById("model").innerHTML =
-        "<b>" + model + "</b>";
+    // Bed Model Rotation
+    document.getElementById("bed").style.transform =
+    "rotate(" + (-angle) + "deg)";
 
-    // บันทึกข้อมูล
+    document.getElementById("angleText").innerHTML =
+    "Current Bed Angle: " + angle + "°";
+
+    // Save Data
     let data = {
         username: username,
         weight: weight,
@@ -253,20 +344,26 @@ function calculateRisk(){
         risk: risk
     };
 
-    let history = JSON.parse(localStorage.getItem("history")) || [];
+    let history =
+    JSON.parse(localStorage.getItem("history")) || [];
 
     history.push(data);
 
-    localStorage.setItem("history", JSON.stringify(history));
+    localStorage.setItem("history",
+    JSON.stringify(history));
 
     showHistory();
+
+    updateChart();
 }
 
 function showHistory(){
 
-    let history = JSON.parse(localStorage.getItem("history")) || [];
+    let history =
+    JSON.parse(localStorage.getItem("history")) || [];
 
-    let table = document.getElementById("historyTable");
+    let table =
+    document.getElementById("historyTable");
 
     table.innerHTML = "";
 
@@ -274,51 +371,112 @@ function showHistory(){
 
         table.innerHTML += `
         <tr>
-            <td>${item.username}</td>
-            <td>${item.weight}</td>
-            <td>${item.angle}°</td>
-            <td>${item.risk}</td>
+        <td>${item.username}</td>
+        <td>${item.weight}</td>
+        <td>${item.angle}°</td>
+        <td>${item.risk}</td>
         </tr>
         `;
+
     });
+
+}
+
+function updateChart(){
+
+    let history =
+    JSON.parse(localStorage.getItem("history")) || [];
+
+    let labels = [];
+
+    let risks = [];
+
+    history.forEach((item,index)=>{
+
+        labels.push("Record " + (index+1));
+
+        risks.push(item.risk);
+
+    });
+
+    let ctx =
+    document.getElementById("riskChart").getContext("2d");
+
+    if(chart){
+        chart.destroy();
+    }
+
+    chart = new Chart(ctx, {
+
+        type:'line',
+
+        data:{
+
+            labels:labels,
+
+            datasets:[{
+
+                label:'Risk Trend',
+
+                data:risks,
+
+                fill:false,
+
+                tension:0.3
+
+            }]
+
+        }
+
+    });
+
 }
 
 function saveFeedback(){
 
-    let text = document.getElementById("feedbackText").value;
+    let text =
+    document.getElementById("feedbackText").value;
 
-    if(text === ""){
+    if(text===""){
         return;
     }
 
-    let feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
+    let feedbacks =
+    JSON.parse(localStorage.getItem("feedbacks")) || [];
 
     feedbacks.push(text);
 
-    localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
+    localStorage.setItem("feedbacks",
+    JSON.stringify(feedbacks));
 
-    document.getElementById("feedbackText").value = "";
+    document.getElementById("feedbackText").value="";
 
     showFeedback();
 }
 
 function showFeedback(){
 
-    let feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
+    let feedbacks =
+    JSON.parse(localStorage.getItem("feedbacks")) || [];
 
-    let list = document.getElementById("feedbackList");
+    let list =
+    document.getElementById("feedbackList");
 
-    list.innerHTML = "";
+    list.innerHTML="";
 
-    feedbacks.forEach(item => {
+    feedbacks.forEach(item=>{
 
         list.innerHTML += `<li>${item}</li>`;
 
     });
+
 }
 
 showHistory();
+
 showFeedback();
+
+updateChart();
 
 </script>
 
